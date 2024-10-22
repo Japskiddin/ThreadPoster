@@ -1,4 +1,5 @@
 # ThreadPoster
+
 A small library implementing a convenient API for sending work to a thread and returning the result to the UI.
 
 Under the hood, it uses standard Java multithreading features such as **ThreadPool** and **Handler**.
@@ -10,7 +11,7 @@ To start working, you need to do the following:
 For Kotlin:
 
 ```kotlin
-class App: Application() {
+class App : Application() {
     companion object {
         val threadPoster: ThreadPoster = ThreadPoster()
     }
@@ -40,7 +41,7 @@ threadPoster.postToBackground { /* Your code */ }
 For Java:
 
 ```java
-threadPoster.postToBackground(() -> { /* Your code */ })
+threadPoster.postToBackground(() ->{ /* Your code */ });
 ```
 
 3. To return the execution result to the UI thread, you need to call the ThreadPoster.postToUI(Runnable) method.
@@ -54,7 +55,7 @@ threadPoster.postToUI { /* Your code */ }
 For Java:
 
 ```java
-threadPoster.postToUI(() -> { /* Your code */ })
+threadPoster.postToUI(() ->{ /* Your code */ });
 ```
 
 You can also learn more about how the library works using the example presented in the **sample** module in this repo.
