@@ -1,0 +1,90 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish'
+        required: true
+        default: 'v1.0.0'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create GPG keystore
+        env:
+          GPG_SIGN_SECRET_KEY_RING_FILE: ${{ secrets.GPG_SIGN_SECRET_KEY_RING_FILE }}
+        run: |
+          mkdir -p $HOME/.gnupg
+          echo $GPG_SIGN_SECRET_KEY_RING_FILE | base64 --decode > $HOME/.gnupg/secring.gpg
+        shell: bash
+
+      - name: Create GPG environment variables
+        env:
+          GPG_SIGN_KEY_ID: ${{ secrets.GPG_SIGN_KEY_ID }}
+          GPG_SIGN_KEY_PASSWORD: ${{ secrets.GPG_SIGN_KEY_PASSWORD }}
+        run: |
+          mkdir -p $HOME/.gradle
+          touch $HOME/.gradle/gradle.properties
+          echo signing.keyId="$GPG_SIGN_KEY_ID" >> $HOME/.gradle/gradle.properties
+          echo signing.password="$GPG_SIGN_KEY_PASSWORD" >> $HOME/.gradle/gradle.properties
+          echo signing.secretKeyRingFile="$HOME/.gnupg/secring.gpg" >> $HOME/.gradle/gradle.properties
+        shell: bash
+
+      - name: Create GitHub properties file
+        env:
+          GPR_USER: ${{ github.actor }}
+          GPR_API_KEY: ${{ secrets.GPR_API_KEY }}
+        run: |
+          touch github.properties
+          echo gpr.usr="$GPR_USER" >> github.properties
+          echo gpr.key="$GPR_API_KEY" >> github.properties
+        shell: bash
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Generate Debug APK
+        run: ./gradlew clean sample:assembleDebug
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: sample-debug
+          path: sample/build/outputs/apk/debug/**.apk
+
+      - name: Create release and upload debug APK
+        uses: underwindfall/create-release-with-debugapk@v2.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GPR_API_KEY }}
+        with:
+          tag_name: ${{ inputs.version }}
+          release_name: Release ${{ inputs.version }}
+          asset_path: sample/build/outputs/apk/debug/sample-debug.apk
+          asset_name: Sample.apk
+          asset_content_type: application/zip
+          draft: false
+          prerelease: false
+
+      - name: Release build
+        run: ./gradlew assembleRelease
+
+      - name: Publish to Github Packages
+        env:
+          GPR_USER: ${{ github.actor }}
+          GPR_API_KEY: ${{ secrets.GPR_API_KEY }}
+        run: ./gradlew publishReleasePublicationToGitHubPackagesRepository

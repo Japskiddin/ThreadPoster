@@ -54,7 +54,7 @@ class LoadImageTask(
             connection.connect()
             val bufferedInputStream = BufferedInputStream(connection.inputStream)
             BitmapFactory.decodeStream(bufferedInputStream)
-        } catch (e: IOException) {
+        } catch (@Suppress("SwallowedException") e: IOException) {
             null
         } finally {
             connection?.disconnect()
