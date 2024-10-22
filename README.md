@@ -1,5 +1,8 @@
 # ThreadPoster
 
+[![Check build](https://github.com/Japskiddin/ThreadPoster/actions/workflows/check_build.yml/badge.svg)](https://github.com/Japskiddin/ThreadPoster/actions/workflows/check_build.yml)
+[![Publish release](https://github.com/Japskiddin/ThreadPoster/actions/workflows/release.yml/badge.svg)](https://github.com/Japskiddin/ThreadPoster/actions/workflows/release.yml)
+
 A small library implementing a convenient API for sending work to a thread and returning the result to the UI.
 
 Under the hood, it uses standard Java multithreading features such as **ThreadPool** and **Handler**.
