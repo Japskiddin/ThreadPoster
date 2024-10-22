@@ -6,7 +6,7 @@ plugins {
 android {
     namespace = "io.github.japskiddin.threadposter.sample"
     defaultConfig {
-        applicationId = "io.github.japskiddin.screenrecorder.sample"
+        applicationId = "io.github.japskiddin.threadposter.sample"
         versionCode = 1
         versionName = "1.0.0"
     }

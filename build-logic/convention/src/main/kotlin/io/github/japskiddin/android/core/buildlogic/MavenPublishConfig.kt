@@ -97,7 +97,7 @@ internal fun Project.configureMavenPublish(
             // Репозиторий в GitHub Packages
             maven {
                 name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/Japskiddin/ScreenRecorder")
+                url = uri("https://maven.pkg.github.com/Japskiddin/ThreadPoster")
                 credentials {
                     username = if (githubProperties.hasProperty("GITHUB_USERNAME")) {
                         githubProperties.getProperty("GITHUB_USERNAME")
